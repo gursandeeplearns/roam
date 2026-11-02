@@ -23,6 +23,20 @@ npx eas-cli@latest <cmd>    # EAS builds, submits, and updates (use instead of b
 - `ios/` and `android/` are generated. Never create or edit them by hand; configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, switch to a development build (`npx expo run:ios`).
 
+## Styling
+
+- Style with NativeWind v5 `className`. No `StyleSheet.create` for new UI.
+- `nativewind` and `react-native-css` are pinned as an exact RC pair (https://www.nativewind.dev/v5/getting-started/installation). Upgrade them together, never separately, and keep the `lightningcss` override in `package.json` matching the docs.
+- `src/global.css` is imported once in `src/app/_layout.tsx`. Keep its split Tailwind imports; a single `@import "tailwindcss"` lets React Native Web defaults override utilities.
+- After changing `metro.config.js`, `postcss.config.mjs`, or `global.css`, restart with `npx expo start --clear`.
+- **Tokens:** they live in `@theme` in `src/global.css`, in `px`, never `rem`. Tailwind's default colors and radii are reset, so only Roam tokens compile. `src/theme/colors.ts` mirrors the colors for JS-only props (icon color, `Switch`, placeholders), and both change together. No hex values, `fontSize`, or `StyleSheet.create` anywhere else.
+- **Spacing:** a 4px grid through Tailwind's numeric scale (`p-4` = 16). Screen edge padding is `px-5`.
+- **Text:** use the `Text` variants (display, heading, title, body, label, caption, small, button). Fonts are Plus Jakarta Sans, loaded in `src/app/_layout.tsx`. Weights come from `font-sans-*` families (Regular is `--font-sans-regular`, because NativeWind overrides `--font-sans` per platform), never `font-bold`.
+- **Icons:** Lucide, drawn through `Icon`. Brand assets (logo, Google "G") come from `assets/`.
+- **Components:** primitives live in `src/components/ui/`, composites in `src/components/`. They take `className` for layout only; a new look means a new variant. Third-party components get `className` through `styled()` from `nativewind`. Pressed feedback uses `active:` classes.
+- **Theme:** light mode only for now (`userInterfaceStyle: "light"`).
+- `/design-system` (dev only) is the living reference. Add new components to it.
+
 ## Who owns what
 
 Each tool has one job. Ask before moving a responsibility to a different tool.
